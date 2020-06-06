@@ -39,18 +39,13 @@ class ProductController {
     const { name, description, stock, price, size, id_type } = req.body;
     const { id: id_product } = req.params;
 
-    const file = req.file ? req.file : null;
-    let id_file;
+    let id_file = null;
 
-    if (file.changed) {
-      id_file = file.id_file;
+    if (req.file && req.file.changed) {
+      id_file = req.file.id_file;
     }
 
     const [product] = await connection('products').where('id', id_product);
-
-    if (!product) {
-      return res.status(400).json({ error: 'Product is not exist.' });
-    }
 
     if (id_user !== product.id_owner) {
       return res

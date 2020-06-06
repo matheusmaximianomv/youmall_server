@@ -20,13 +20,24 @@ export default async (req, res, next) => {
   if (req.method === 'PUT') {
     const { id: id_product } = req.params;
 
-    const [{ path, id_file }] = await connection('products')
+    const [product] = await connection('products')
       .innerJoin('files', {
-        'products.id_file': 'files.id',
+        id_file: 'file_id',
       })
-      .where('products.id', id_product)
-      .select('*')
+      .where('product_id', id_product)
+      .select(
+        'files.path as path',
+        'files.id as file_id',
+        'products.id_file as id_file',
+        'products.id as product_id'
+      )
       .limit(1);
+
+    if (!product) {
+      return res.status(400).json({ error: 'Product is not exist.' });
+    }
+
+    const { path, id_file } = product;
 
     if (!id_file) {
       const { filename, originalname } = req.file;
