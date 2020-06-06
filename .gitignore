@@ -1,0 +1,7 @@
+node_modules/
+
+tmp/uploads/products/*
+!tmp/uploads/products/.gitkeep
+
+__tests__/files/*
+!__tests__/files/.gitkeep
