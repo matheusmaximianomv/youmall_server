@@ -6,6 +6,7 @@ import multerConfig from './config/multer';
 import AccountController from './app/controllers/AccountController';
 import SessionController from './app/controllers/SessionController';
 import ProductController from './app/controllers/ProductController';
+import FileController from './app/controllers/FileController';
 
 import Authenticated from './app/middlewares/Authenticated';
 import UploadImage from './app/middlewares/UploadImage';
@@ -42,6 +43,8 @@ routes.put(
   UploadImage,
   ProductController.update
 );
+
+routes.get('/files/:id', FileController.show);
 
 routes.get('*', (req, res) => {
   return res.status(404).json({
