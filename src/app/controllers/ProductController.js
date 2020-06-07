@@ -41,11 +41,13 @@ class ProductController {
 
     let id_file = null;
 
-    if (req.file && req.file.changed) {
+    if (req.file && req.file.add) {
       id_file = req.file.id_file;
     }
 
-    const [product] = await connection('products').where('id', id_product);
+    const [product] = await connection('products')
+      .where('id', id_product)
+      .limit(1);
 
     if (id_user !== product.id_owner) {
       return res
@@ -65,7 +67,11 @@ class ProductController {
       })
       .where('id', id_product);
 
-    return res.status(204).json();
+    const [product_updated] = await connection('products')
+      .where('id', id_product)
+      .limit(1);
+
+    return res.status(200).json(product_updated);
   }
 }
 

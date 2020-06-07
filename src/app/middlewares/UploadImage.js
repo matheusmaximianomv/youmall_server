@@ -21,23 +21,15 @@ export default async (req, res, next) => {
     const { id: id_product } = req.params;
 
     const [product] = await connection('products')
-      .innerJoin('files', {
-        id_file: 'file_id',
-      })
-      .where('product_id', id_product)
-      .select(
-        'files.path as path',
-        'files.id as file_id',
-        'products.id_file as id_file',
-        'products.id as product_id'
-      )
+      .where('id', id_product)
+      .select('*')
       .limit(1);
 
     if (!product) {
       return res.status(400).json({ error: 'Product is not exist.' });
     }
 
-    const { path, id_file } = product;
+    const { id_file } = product;
 
     if (!id_file) {
       const { filename, originalname } = req.file;
@@ -48,15 +40,16 @@ export default async (req, res, next) => {
       });
 
       req.file.id_file = id;
-      req.file.changed = false;
+      req.file.add = true;
 
       return next();
     }
 
+    const [{ path }] = await connection('files').where('id', id_file);
     const { filename, originalname } = req.file;
 
     await File.delete(path);
-    req.file.changed = true;
+    req.file.add = false;
 
     await connection('files')
       .update({
